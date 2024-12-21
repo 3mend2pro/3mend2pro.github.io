@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Partidas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Registro de Partidas - COD MOBILE</h1>
+    </header>
+    <main>
+        <section class="form-section">
+            <form id="registration-form">
+                <label for="player-name">Nombre del jugador:</label>
+                <input type="text" id="player-name" placeholder="Introduce tu nombre de jugador" required>
+                <button type="submit" class="green">Listo</button>
+            </form>
+        </section>
+        <section class="actions-section">
+            <button id="reset-button" class="red">Resetear Lista</button>
+            <button id="link-button" class="green">Ir a Enlace</button>
+        </section>
+        <section class="list-section">
+            <h2>Lista de Jugadores</h2>
+            <ul id="player-list"></ul>
+        </section>
+    </main>
+
+    <!-- Importar Firebase y el script JavaScript -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>
