@@ -2,33 +2,47 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Analizador de Video YouTube</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    /* Mantengo tu CSS intacto, solo añado pequeños estilos para el área de comparación */
     body {
       font-family: 'Segoe UI', sans-serif;
-      margin: 0; padding: 0;
+      margin: 0;
+      padding: 0;
       background: linear-gradient(120deg, #ff4757, #1e90ff);
       color: #fff;
       transition: background 0.3s, color 0.3s;
     }
+
     body.dark-mode {
-      background: #121212; color: #f0f0f0;
+      background: #121212;
+      color: #f0f0f0;
     }
+
     .topbar {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 20px; background: rgba(0, 0, 0, 0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: rgba(0, 0, 0, 0.3);
     }
-    .topbar img { height: 40px; }
+
+    .topbar img {
+      height: 40px;
+    }
+
     .topbar .actions button {
-      margin-left: 10px; padding: 8px;
-      border: none; border-radius: 8px;
-      background: #fff; color: #000;
+      margin-left: 10px;
+      padding: 8px;
+      border: none;
+      border-radius: 8px;
+      background: #fff;
+      color: #000;
       cursor: pointer;
     }
+
     .container {
       max-width: 600px;
       margin: 30px auto;
@@ -38,57 +52,49 @@
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
       text-align: center;
     }
+
     input {
-      width: 90%; padding: 12px; margin: 10px 0;
-      border: none; border-radius: 8px; font-size: 1rem;
+      width: 90%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
     }
-    button#analyze, button#compare {
-      padding: 14px 20px; font-size: 1.2rem;
-      background: #ffcc00; border: none;
-      border-radius: 10px; color: #000;
-      cursor: pointer; margin-top: 10px;
+
+    button#analyze {
+      padding: 14px 20px;
+      font-size: 1.2rem;
+      background: #ffcc00;
+      border: none;
+      border-radius: 10px;
+      color: #000;
+      cursor: pointer;
+      margin-top: 10px;
     }
+
     .output {
       margin-top: 20px;
       text-align: left;
       word-wrap: break-word;
       white-space: pre-wrap;
     }
+
     .tooltip {
-      cursor: help; border-bottom: 1px dotted #ccc;
+      cursor: help;
+      border-bottom: 1px dotted #ccc;
     }
+
     #historySection {
       display: none;
       margin-top: 20px;
     }
+
     canvas {
-      margin: 30px auto 0 auto;
-      display: block;
-      width: 95% !important;
-      max-width: 400px;
-      height: auto !important;
-    }
-    .comparison-section {
       margin-top: 30px;
-      border-top: 1px solid rgba(255,255,255,0.3);
-      padding-top: 20px;
-      text-align: left;
-    }
-    .comparison-section h3 {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-    .inputs-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-    }
-    .inputs-column {
-      flex: 1;
-    }
-    .inputs-column input {
-      width: 100%;
-      margin: 8px 0;
+      width: 100% !important;
+      max-width: 450px;
+      height: auto !important;
     }
   </style>
 </head>
@@ -104,38 +110,13 @@
 
   <div class="container">
     <h2>Analizador de Video YouTube Profesional</h2>
-
-    <!-- Inputs Video 1 -->
-    <h3>Video 1</h3>
-    <input id="impressions1" type="number" placeholder="Impresiones del video 1" />
-    <input id="ctr1" type="number" placeholder="CTR video 1 (solo número, sin %)" />
-    <input id="views1" type="number" placeholder="Vistas video 1" />
-    <button id="analyze" onclick="analyzeData()">Iniciar análisis Video 1</button>
+    <input id="impressions" type="number" placeholder="Impresiones del video" />
+    <input id="ctr" type="number" placeholder="CTR (solo número, sin %)"> <span class="tooltip" title="Click Through Rate: Porcentaje de personas que hicieron clic tras ver la miniatura">❓</span>
+    <input id="views" type="number" placeholder="Cantidad de vistas" />
+    <button id="analyze" onclick="analyzeData()">Iniciar análisis</button>
 
     <div class="output" id="result"></div>
     <canvas id="chart"></canvas>
-
-    <!-- Comparación -->
-    <div class="comparison-section">
-      <h3>Comparar dos videos</h3>
-      <div class="inputs-row">
-        <div class="inputs-column">
-          <strong>Video 1</strong>
-          <input id="impressionsComp1" type="number" placeholder="Impresiones video 1" />
-          <input id="ctrComp1" type="number" placeholder="CTR video 1 (solo número)" />
-          <input id="viewsComp1" type="number" placeholder="Vistas video 1" />
-        </div>
-        <div class="inputs-column">
-          <strong>Video 2</strong>
-          <input id="impressionsComp2" type="number" placeholder="Impresiones video 2" />
-          <input id="ctrComp2" type="number" placeholder="CTR video 2 (solo número)" />
-          <input id="viewsComp2" type="number" placeholder="Vistas video 2" />
-        </div>
-      </div>
-      <button id="compare" onclick="compareVideos()">Comparar Videos</button>
-      <div class="output" id="comparisonResult"></div>
-      <canvas id="comparisonChart"></canvas>
-    </div>
 
     <div id="historySection"></div>
   </div>
@@ -144,15 +125,12 @@
     const ctx = document.getElementById('chart').getContext('2d');
     let chart;
 
-    const ctxComp = document.getElementById('comparisonChart').getContext('2d');
-    let comparisonChart;
-
     function analyzeData() {
-      const impressions = parseInt(document.getElementById('impressions1').value);
-      const ctr = parseFloat(document.getElementById('ctr1').value);
-      const views = parseInt(document.getElementById('views1').value);
+      const impressions = parseInt(document.getElementById('impressions').value);
+      const ctr = parseFloat(document.getElementById('ctr').value);
+      const views = parseInt(document.getElementById('views').value);
 
-      if (!impressions || !ctr || !views) return alert('Completa todos los campos para Video 1.');
+      if (!impressions || !ctr || !views) return alert('Completa todos los campos.');
 
       const clicks = Math.round((ctr / 100) * impressions);
       const conversion = ((views / clicks) * 100).toFixed(2);
@@ -173,12 +151,10 @@
       }
 
       document.getElementById('result').innerHTML = `
-        <h3>Resultados Video 1</h3>
+        <h3>Resultados</h3>
         <p><strong>Clics estimados:</strong> ${clicks}</p>
         <p><strong>Conversión (vistas/clics):</strong> ${conversion}%</p>
-        <div style="background-color: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px;">
-          ${recommendation.replace(/\n/g, '<br>')}
-        </div>
+        <pre style="white-space: pre-wrap; word-break: break-word;">${recommendation}</pre>
       `;
 
       saveToHistory(impressions, ctr, views, clicks, conversion);
@@ -189,100 +165,35 @@
         data: {
           labels: ['Impresiones', 'Clics', 'Vistas'],
           datasets: [{
-            label: 'Video 1',
+            label: 'Datos del Video',
             data: [impressions, clicks, views],
             borderColor: '#00ffcc',
-            borderWidth: 1.2,
+            borderWidth: 1.5,
             fill: false,
-            tension: 0.4
+            tension: 0.3
           }]
         },
         options: {
           responsive: true,
           plugins: {
-            legend: { labels: { color: 'white' } }
-          },
-          scales: {
-            y: { ticks: { color: 'white' }, beginAtZero: true },
-            x: { ticks: { color: 'white' } }
-          }
-        }
-      });
-    }
-
-    function compareVideos() {
-      const imp1 = parseInt(document.getElementById('impressionsComp1').value);
-      const ctr1 = parseFloat(document.getElementById('ctrComp1').value);
-      const views1 = parseInt(document.getElementById('viewsComp1').value);
-
-      const imp2 = parseInt(document.getElementById('impressionsComp2').value);
-      const ctr2 = parseFloat(document.getElementById('ctrComp2').value);
-      const views2 = parseInt(document.getElementById('viewsComp2').value);
-
-      if (!imp1 || !ctr1 || !views1 || !imp2 || !ctr2 || !views2) {
-        return alert('Completa todos los campos para comparar ambos videos.');
-      }
-
-      const clicks1 = Math.round((ctr1 / 100) * imp1);
-      const conversion1 = ((views1 / clicks1) * 100).toFixed(2);
-
-      const clicks2 = Math.round((ctr2 / 100) * imp2);
-      const conversion2 = ((views2 / clicks2) * 100).toFixed(2);
-
-      // Mostrar resultados
-      let compText = `
-        <h3>Comparación entre Videos</h3>
-        <p><strong>Video 1:</strong> CTR ${ctr1}%, Clics ${clicks1}, Conversión ${conversion1}%</p>
-        <p><strong>Video 2:</strong> CTR ${ctr2}%, Clics ${clicks2}, Conversión ${conversion2}%</p>
-      `;
-
-      // Diferencias y recomendaciones básicas
-      let rec = '';
-      if (ctr1 > ctr2) rec += '👍 Video 1 tiene mejor CTR.<br>';
-      else if (ctr2 > ctr1) rec += '👍 Video 2 tiene mejor CTR.<br>';
-      else rec += '🔄 Ambos videos tienen CTR similar.<br>';
-
-      if (conversion1 > conversion2) rec += '👍 Video 1 tiene mejor conversión.<br>';
-      else if (conversion2 > conversion1) rec += '👍 Video 2 tiene mejor conversión.<br>';
-      else rec += '🔄 Ambas conversiones son similares.<br>';
-
-      compText += `<div style="background-color: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px;">${rec}</div>`;
-
-      document.getElementById('comparisonResult').innerHTML = compText;
-
-      if (comparisonChart) comparisonChart.destroy();
-
-      comparisonChart = new Chart(ctxComp, {
-        type: 'line',
-        data: {
-          labels: ['Impresiones', 'Clics', 'Vistas'],
-          datasets: [
-            {
-              label: 'Video 1',
-              data: [imp1, clicks1, views1],
-              borderColor: '#00ffcc',
-              borderWidth: 1.2,
-              fill: false,
-              tension: 0.4
-            },
-            {
-              label: 'Video 2',
-              data: [imp2, clicks2, views2],
-              borderColor: '#ff6f61',
-              borderWidth: 1.2,
-              fill: false,
-              tension: 0.4
+            legend: {
+              labels: {
+                color: 'white'
+              }
             }
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { labels: { color: 'white' } }
           },
           scales: {
-            y: { ticks: { color: 'white' }, beginAtZero: true },
-            x: { ticks: { color: 'white' } }
+            y: {
+              ticks: {
+                color: 'white'
+              },
+              beginAtZero: true
+            },
+            x: {
+              ticks: {
+                color: 'white'
+              }
+            }
           }
         }
       });
@@ -323,5 +234,4 @@
     }
   </script>
 </body>
-    </html>
-    
+</html>
